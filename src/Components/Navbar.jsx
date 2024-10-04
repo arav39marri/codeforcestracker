@@ -14,14 +14,14 @@ const Navbar = () => {
 
     return (
         <div className='bg-slate-800 flex text-white min-h-14 items-center gap-5  w-full '>
-            <div className='p-3 flex items-center justify-start gap-6 w-[20%]  '   >
-            <SiPivotaltracker className='text-2xl' />
+            <div className='p-3 flex items-center justify-start gap-6 w-[20%]   '   >
+            <div className='block'><SiPivotaltracker className='md:text-2xl text-5xl' /></div>
             <p className='font-bold text-xl '> Tracker</p>
             </div>
-            <div className='p-1 w-[80%] '  >
+            <div className='p-1 md:w-[80%] w-[30%] absolute  right-0 '  >
             <ul className='md:flex hidden items-center   justify-start gap-10 text-lg font-semibold '>
-                    <Link to="/show">
-                        <li className={`hnd p-1 pr-1 ${currentLocation.pathname === '/show' ? 'active' : ''}`}>
+                    <Link to="/">
+                        <li className={`hnd p-1 pr-1 ${currentLocation.pathname === '/' ? 'active' : ''}`}>
                         LeaderBoard
                         </li>
                     </Link>
@@ -38,7 +38,7 @@ const Navbar = () => {
             </ul>
                { 
                  icon ? 
-                 (<div  className=' md:hidden relative   right-0 bg-slate-800   top-0 p-3    ' >
+                 (<div  className=' md:hidden  relative   right-0 bg-slate-800   top-0 p-3    ' >
                     <div className=' flex justify-end '>
                     <IoMenuSharp className="text-3xl text-right " onClick={handleToggle} />
                         </div>

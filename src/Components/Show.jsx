@@ -42,12 +42,13 @@ useEffect(()=>{
           });
           setData(sortedData);
           toggleRating(true);
+          setLoading(false);
     }
 
 },[dat,data,ratingt]);
 
   return (
-    <div className="pl-16  flex flex-col gap-8">
+    <div className="pl-16  flex flex-col gap-8 md:mr-[0%] mr-[6%] ">
      
      <div className="flex text-4xl pt-5    justify-center font-bold ">
         <p>Leader Board</p>
@@ -65,7 +66,7 @@ useEffect(()=>{
       ) :
        (
          <div className="overflow-auto ">
-         <table className=" border border-black sm:text-lg text-sm w-[80%] ">
+         <table className=" border border-black sm:text-lg bg-slate-500 text-sm w-[80%] ">
           <thead className="bg-slate-600 text-white">
             <tr>
               <th
@@ -97,10 +98,10 @@ useEffect(()=>{
                 key={index}
                 className={`${index % 2 ? 'bg-slate-50' : 'bg-slate-200'} border-black`}
               >
-                <td className="text-center sticky left-0 bg-slate-50 border-r border-black  ">
+                <td className="text-center sticky left-0 bg-slate-300 border-r border-black  ">
                   {index + 1}
                 </td>
-                <td className="text-center sticky left-12 bg-slate-50 border-r border-black ">
+                <td className="text-center sticky left-12 bg-slate-200 border-r border-black ">
                   {ele.name}
                 </td>
                 <td className="text-center border-r border-black">{ele.handle   }</td>

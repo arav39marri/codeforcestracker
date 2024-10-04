@@ -50,7 +50,7 @@ function App() {
               name: ele.name,
               createdAt: ele.createdAt,
             };
-            console.log(mergedData);
+            // console.log(mergedData);
             results.push(mergedData);
           } catch (error) {
             console.log("Error in fetching data from Codeforces API", error);
@@ -76,7 +76,7 @@ function App() {
      <Routes>
      <Route path='/' element={<Show/>}/>
       <Route path='/Createuser' element={<Createuser/>}/>
-      <Route path='/Show' element={<Show/>}/>
+      
       <Route path='/Allusers' element={<Allusers/>}/>
      </Routes>
    </>
