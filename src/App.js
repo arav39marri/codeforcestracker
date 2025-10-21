@@ -8,6 +8,7 @@ import Show from './Components/Show';
 import Navbar from './Components/Navbar';
 import Allusers from './Components/Allusers';
 import Home from './Components/Home';
+import { useNavigate } from 'react-router-dom';
 
 
 function App() {
@@ -15,7 +16,7 @@ function App() {
   const [info, setInfo] = useState([]);
   const databaseUrl = process.env.REACT_APP_URL;
   const dispatch = useDispatch(); 
-
+  const navigate = useNavigate() ;
    
   useEffect(() => {
     async function fetchFromDb() {
@@ -96,7 +97,9 @@ function App() {
       fetchCodeforcesData();
     }
   }, [info, dispatch]);
-
+  const handle = (()=>{
+    navigate('/Createuser');
+  })
   return (
    <div className='h-screen st  w-[100%]  text-white '>
      <div className='pt-32 flex   flex-col justify-center items-center'>
@@ -106,6 +109,10 @@ function App() {
      </div>
      <p className='text-[#b8c1cd] sm:pl-44 pl-10 font-medium text-xl subtext ' > 
       tracks your progress as well as your Competetive Programming companions progress on codeforces  </p>
+   
+    <div className='gap-10 pt-10 flex items-center justify-center'>
+      <button onClick={handle} className='text-xl font-bold bg-blue-500 p-1 rounded-lg '>Get started</button>
+    </div>
    </div>
 
   );
