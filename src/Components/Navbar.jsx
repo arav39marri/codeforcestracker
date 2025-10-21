@@ -1,26 +1,30 @@
-// ...existing code...
+
 import React, { useState, useEffect } from 'react';
 import { SiPivotaltracker } from "react-icons/si";
 import { Link, useLocation } from 'react-router-dom';
 import { IoMenuSharp, IoClose } from "react-icons/io5";
+import { useNavigate  } from 'react-router-dom';
 import './Navbar.css'
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const handleToggle = () => setIsOpen(v => !v);
     const currentLocation = useLocation();
-
-    // lock body scroll when sidebar is open
+   const navigate = useNavigate() ;
+    
     useEffect(() => {
         document.body.style.overflow = isOpen ? 'hidden' : '';
         return () => { document.body.style.overflow = ''; };
     }, [isOpen]);
+    const handle = (()=>{
+        navigate('/') ;
+    })
 
     return (
         <div className='st flex text-white min-h-14 items-center gap-5 w-full relative z-20'>
-            <div className='p-3 flex items-center justify-start gap-6 w-[20%]'>
+            <div className='p-3 cursor-pointer flex items-center justify-start gap-6 w-[20%]' onClick={handle}>
                 <div className='block'><SiPivotaltracker className='md:text-2xl text-5xl' /></div>
-                <p className='font-bold text-xl'> Tracker</p>
+                <p className='font-bold text-xl' > Tracker</p>
             </div>
 
             <div className='p-1 md:w-[80%] w-[30%] absolute right-0'>
@@ -52,6 +56,7 @@ const Navbar = () => {
                     <IoClose className="text-3xl cursor-pointer" onClick={() => setIsOpen(false)} />
                 </div>
                 <ul className="flex flex-col space-y-4 text-white text-lg w-full gap-6 p-4">
+                     <Link to="/" className='text-center' onClick={() => setIsOpen(false)}><li className='hnd p-1 pr-1'>Home</li></Link>
                     <Link to="/show" className='text-center' onClick={() => setIsOpen(false)}><li className='hnd p-1 pr-1'>LeaderBoard</li></Link>
                     <Link to="/Createuser" className='text-center' onClick={() => setIsOpen(false)}><li className='hnd p-1 pr-1'>Add user</li></Link>
                     <Link to="/Allusers" className='text-center' onClick={() => setIsOpen(false)}><li className='hnd p-1 pr-1'>All users</li></Link>
