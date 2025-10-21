@@ -1,0 +1,15 @@
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(20px) scale(0.99); }
+to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.st{
+    background: #0f0c29;  /* fallback for old browsers */
+    font-family: font-family;
+   
+  background: -webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #24243e, #302b63, #0f0c29); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  /* animation : fadeIn 2s ease forwards; */
+  }
+  .anim{
+    animation : fadeIn 2s pulse forwards;
+  }

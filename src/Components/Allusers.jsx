@@ -12,6 +12,9 @@ const Allusers = () => {
   
   const [loading, setLoading] = useState(true);
   const dat = useSelector((state) => state.mySlice.items);
+  // const dat = localStorage.getItem('alldata') ;
+  // console.log(dat) ;
+  // console.log(typeof(dat)) ;
   const [data, setData] = useState(dat);
   useEffect(()=>{
     if (dat.length > 0) {
@@ -21,7 +24,7 @@ const Allusers = () => {
   },[dat]);
 
   return (
-    <div className="p-4 sm:p-6 md:p-8 lg:p-10 xl:p-[5%]  bg-slate-200 h-full w-full">
+  <div className="p-4 sm:p-6 md:p-8 lg:p-10 xl:p-[5%] st h-full w-full">
       <div className="p-3 flex flex-wrap gap-4 items-center justify-center">
         {
          
@@ -29,8 +32,9 @@ const Allusers = () => {
         (
           data.map((info, index) => (
             <div
+            style={{ animation: 'fadeIn 700ms ease forwards' }}
               key={index}
-              className="flex flex-col p-4 border bg-white rounded-xl border-gray-300 font-mono w-64 h-80 md:w-64 md:h-80"
+              className="flex flex-col p-4  border bg-white rounded-xl border-gray-300 font-mono w-64 h-80 md:w-64 md:h-80"
             >
               <div className="mb-4 w-full h-40 flex justify-center">
                 <img

@@ -6,13 +6,27 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux'
 import {store} from './redux/store'
+import { Route, Routes } from 'react-router-dom';
+import Home from './Components/Home';
+import Allusers from './Components/Allusers';
+import Show from './Components/Show';
+import Createuser from './Components/Createuser';
+import Navbar from './Components/Navbar';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <Provider store={store}>
      <BrowserRouter>
-         <App />
+      <Navbar/> 
+      
+      <Routes>
+     <Route path='/' element={<App/>}/>
+     <Route path='/show' element={<Show/>}> </Route>
+      <Route path='/Createuser' element={<Createuser/>}/>
+      
+      <Route path='/Allusers' element={<Allusers/>}/>
+     </Routes>
      </BrowserRouter>
   </Provider>
   </React.StrictMode>

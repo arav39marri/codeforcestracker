@@ -1,132 +1,268 @@
 import React, { useState, useEffect } from "react";
 import "./Show.css";
-import { FaSort } from "react-icons/fa";
-import animation from "../animation.json";
+import axios from "axios";
+import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import { Player } from "@lottiefiles/react-lottie-player";
-import { useSelector } from 'react-redux';
+import animation from "../animation.json";
+import { useSelector, useDispatch } from "react-redux";
+import { setData } from "../redux/features/fetch";
+
+const rankLabel = (rating) => {
+  if (rating === null || rating === undefined)
+    return { label: "Unrated", key: "unrated" };
+  const r = Number(rating) || 0;
+  if (r >= 2900) return { label: "Legendary GM", key: "legendary" };
+  if (r >= 2600) return { label: "International GM", key: "int-gm" };
+  if (r >= 2200) return { label: "Grandmaster", key: "grandmaster" };
+  if (r >= 2050) return { label: "International Master", key: "int-master" };
+  if (r >= 1900) return { label: "Master", key: "master" };
+  if (r >= 1700) return { label: "Candidate Master", key: "cand-master" };
+  if (r >= 1500) return { label: "Expert", key: "expert" };
+  if (r >= 1350) return { label: "Specialist", key: "specialist" };
+  if (r >= 1200) return { label: "Pupil", key: "pupil" };
+  return { label: "Newbie", key: "newbie" };
+};
+
+const timeAgo = (timestamp) => {
+  if (!timestamp) return "-";
+  const then = new Date(timestamp);
+  const diff = (Date.now() - then.getTime()) / 1000;
+  if (diff < 60) return `${Math.floor(diff)}s ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return `${Math.floor(diff / 86400)}d ago`;
+};
 
 const Show = () => {
-
-  const dat = useSelector((state) => state.mySlice.items);
-
-  const [data,setData] = useState(dat);
-  const [Namet, toggleName] = useState(false);
-  const [ratingt, toggleRating] = useState(false);
-
+  const dat = useSelector((state) => state.mySlice.items) || [];
+  const dispatch = useDispatch();
+  const [data, setData] = useState([]);
+  const [sortKey, setSortKey] = useState("rating");
+  const [sortDir, setSortDir] = useState("desc");
   const [loading, setLoading] = useState(true);
-  const SortName = () => {
-    const sortedData = [...data].sort((a, b) => {
-      if (Namet) return b.name.localeCompare(a.name);
-        return a.name.localeCompare(b.name);
-    });
-    setData(sortedData);
-    toggleName((Namet) => !Namet);
-  };
-  const SortRating = () => {
-    const sortedData = [...data].sort((a, b) => {
-      if (ratingt) return b.rating - a.rating;
-       return a.rating - b.rating;
-    });
-    setData(sortedData);
-    toggleRating((ratingt) => !ratingt);
-  };
 
-useEffect(()=>{
-    if (dat.length > 0 && data.length===0) {
-        setLoading(false);
-        setData(dat); 
-      } 
-    if( data.length>0 && !ratingt){
-        const sortedData = [...data].sort((a, b) => {
-             return b.rating - a.rating;
-          });
-          setData(sortedData);
-          toggleRating(true);
+  const databaseUrl = process.env.REACT_APP_URL || "";
+
+  useEffect(() => {
+    let mounted = true;
+
+    const normalize = (source) =>
+      (source || []).map((d) => ({
+        handle: d.handle || d.memberHandle || "-",
+        name: d.name || d.handle || d.memberName || "-",
+        rating:
+          typeof d.rating === "number"
+            ? d.rating
+            : d.rating || d.maxRating || 0,
+        problemsSolved: d.solved || d.problemsSolved || d.problemCount || "-",
+        lastSeen: d.lastOnlineTimeSeconds
+          ? new Date(d.lastOnlineTimeSeconds * 1000).toISOString()
+          : d.lastSeen || d.createdAt || null,
+        rank: d.rank || d.title || null,
+      }));
+
+    async function ensureData() {
+      try {
+        if (dat && dat.length > 0) {
+          setData(normalize(dat));
           setLoading(false);
+          return;
+        }
+
+        const CACHE_KEY = "cf_cache";
+        const SIX_HOURS = 1000 * 60 * 60 * 6;
+        const raw = localStorage.getItem(CACHE_KEY);
+
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (
+            parsed &&
+            parsed.timestamp &&
+            Date.now() - parsed.timestamp < SIX_HOURS &&
+            Array.isArray(parsed.data)
+          ) {
+            setData(normalize(parsed.data));
+            dispatch(setData(parsed.data));
+            setLoading(false);
+            return;
+          }
+        }
+
+        // Fetch fresh data from backend
+        const res = await axios.get(`${databaseUrl}/show`);
+        const info = res.data || [];
+        const results = [];
+
+        for (const ele of info) {
+          const curr = ele.handle;
+          try {
+            const r = await axios.get(
+              `https://codeforces.com/api/user.info?handles=${curr}&checkHistoricHandles=false`
+            );
+            const merged = {
+              ...r.data.result[0],
+              name: ele.name,
+              createdAt: ele.createdAt,
+            };
+            results.push(merged);
+          } catch (err) {
+            console.warn("Codeforces fetch error for", curr, err);
+          }
+        }
+
+        localStorage.setItem(
+          CACHE_KEY,
+          JSON.stringify({ timestamp: Date.now(), data: results })
+        );
+        dispatch(setData(results));
+        setData(normalize(results));
+      } catch (error) {
+        console.error("Error fetching leaderboard:", error);
+      } finally {
+        if (mounted) setLoading(false);
+      }
     }
 
-},[dat,data,ratingt]);
+    ensureData();
+
+    return () => {
+      mounted = false;
+    };
+  }, [dat, dispatch, databaseUrl]);
+
+  useEffect(() => {
+    if (!data || data.length === 0) return;
+    const sorted = [...data].sort((a, b) => {
+      const dir = sortDir === "asc" ? 1 : -1;
+      if (sortKey === "name") return dir * a.name.localeCompare(b.name);
+      if (sortKey === "rating") return dir * ((a.rating || 0) - (b.rating || 0));
+      if (sortKey === "problemsSolved")
+        return dir * ((a.problemsSolved || 0) - (b.problemsSolved || 0));
+      return 0;
+    });
+    setData(sorted);
+  }, [sortKey, sortDir]);
+
+  const toggleSort = (key) => {
+    if (sortKey === key)
+      setSortDir((s) => (s === "asc" ? "desc" : "asc"));
+    else {
+      setSortKey(key);
+      setSortDir("desc");
+    }
+  };
 
   return (
-    <div className="pl-16  flex flex-col gap-8 md:mr-[0%] mr-[6%] ">
-     
-     <div className="flex text-4xl pt-5    justify-center font-bold ">
-        <p>Leader Board</p>
+    <div className="leaderboard-root p-4 st">
+      <div className="leaderboard-header text-center mb-6">
+        <h2 className="leaderboard-title text-3xl font-bold">Leader Board</h2>
+        <p className="leaderboard-sub text-gray-500">
+          Track progress of your competitive programming companions
+        </p>
       </div>
 
-      {
-       loading ? (
-        <Player
-          src={animation}
-          loop
-          className="player"
-          autoplay
-          style={{ height: "300px", width: "300px" }}
-        />
-      ) :
-       (
-         <div className="overflow-auto ">
-         <table className=" border border-black sm:text-lg bg-slate-500 text-sm w-[80%] ">
-          <thead className="bg-slate-600 text-white">
-            <tr>
-              <th
-                onClick={() => SortName()}
-                className="sticky left-0 bg-slate-600  border-r border-black"
-              >
-                SNo
-              </th>
-              <th
-                onClick={() => SortName()}
-                className="sticky left-12 bg-slate-600  border-r border-black"
-              >
-                Name
-              </th>
-              <th className="border-r border-black">Handle</th>
-              <th className="border-r border-black">Rank</th>
-              <th 
-              onClick={() => SortRating()} 
-              >
-                <div className="flex justify-center">Rating <FaSort /></div>
-              </th>
-              <th>Last seen</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((ele, index) => (
-                
-              <tr
-                key={index}
-                className={`${index % 2 ? 'bg-slate-50' : 'bg-slate-200'} border-black`}
-              >
-                <td className="text-center sticky left-0 bg-slate-300 border-r border-black  ">
-                  {index + 1}
-                </td>
-                <td className="text-center sticky left-12 bg-slate-200 border-r border-black ">
-                  {ele.name}
-                </td>
-                <td className="text-center border-r border-black">{ele.handle   }</td>
-                <td className="text-center border-r border-black">{ele.rank}</td>
-                <td className="text-center border-r border-black">{ele.rating}</td>
-                <td className="text-center">
-                  {Math.floor((Date.now() - ele.lastOnlineTimeSeconds * 1000) / (1000 * 60 * 60)) === 0
-                    ? 'online'
-                    : Math.floor((Date.now() - ele.lastOnlineTimeSeconds * 1000) / (1000 * 60 * 60)) < 23
-                    ? Math.floor((Date.now() - ele.lastOnlineTimeSeconds * 1000) / (1000 * 60 * 60)) + ' hours ago'
-                    : Math.floor((Date.now() - ele.lastOnlineTimeSeconds * 1000) / (1000 * 60 * 60 * 24 * 365)) === 0
-                    ? Math.floor((Date.now() - ele.lastOnlineTimeSeconds * 1000) / (1000 * 60 * 60 * 24)) + ' days ago'
-                    : Math.floor((Date.now() - ele.lastOnlineTimeSeconds * 1000) / (1000 * 60 * 60 * 24 * 365)) + ' years ago'}
-                </td>
+      {loading ? (
+        <div className="loader flex justify-center items-center">
+          <Player
+            src={animation}
+            loop
+            autoplay
+            className="player"
+            style={{ height: "250px", width: "250px" }}
+          />
+        </div>
+      ) : (
+        <div className="table-wrap overflow-x-auto">
+          <table className="leader-table w-full border-collapse">
+            <thead>
+              <tr className="bg-gray-800 text-white text-left">
+                <th className="p-3 cursor-pointer">#</th>
+                <th className="p-3 cursor-pointer" onClick={() => toggleSort("name")}>
+                  Name{" "}
+                  {sortKey === "name" ? (
+                    sortDir === "asc" ? (
+                      <FaSortUp className="inline" />
+                    ) : (
+                      <FaSortDown className="inline" />
+                    )
+                  ) : (
+                    <FaSort className="inline" />
+                  )}
+                </th>
+                <th className="p-3 cursor-pointer" onClick={() => toggleSort("problemsSolved")}>
+                  Solved{" "}
+                  {sortKey === "problemsSolved" ? (
+                    sortDir === "asc" ? (
+                      <FaSortUp className="inline" />
+                    ) : (
+                      <FaSortDown className="inline" />
+                    )
+                  ) : (
+                    <FaSort className="inline" />
+                  )}
+                </th>
+                <th className="p-3 cursor-pointer" onClick={() => toggleSort("rating")}>
+                  Rating{" "}
+                  {sortKey === "rating" ? (
+                    sortDir === "asc" ? (
+                      <FaSortUp className="inline" />
+                    ) : (
+                      <FaSortDown className="inline" />
+                    )
+                  ) : (
+                    <FaSort className="inline" />
+                  )}
+                </th>
+                <th className="p-3">CF Rank</th>
+                <th className="p-3">Last Seen</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-          
-     )
-   
-     }
-      </div>
-   )
-}
+            </thead>
+            <tbody>
+              {data.length > 0 ? (
+                data.map((row, idx) => (
+                  <tr key={row.handle + idx} className="border-b hover:bg-gray-50">
+                    <td className="p-3">{idx + 1}</td>
+                    <td className="p-3">{row.name}</td>
+                    <td className="p-3 text-center">{row.problemsSolved ?? "-"}</td>
+                    <td className="p-3 text-center">{row.rating ?? "-"}</td>
+                    <td className="p-3 text-center">
+                      {(() => {
+                        const r = row.rank
+                          ? {
+                              label: row.rank,
+                              key: row.rank.toLowerCase().replace(/\s+/g, "-"),
+                            }
+                          : rankLabel(row.rating);
+                        return (
+                          <span className={`badge rank-${r.key}`}>
+                            {r.label}
+                          </span>
+                        );
+                      })()}
+                    </td>
+                    <td className="p-3 text-sm text-gray-500">
+                      <div>{timeAgo(row.lastSeen)}</div>
+                      <div>
+                        {row.lastSeen
+                          ? new Date(row.lastSeen).toLocaleString()
+                          : "-"}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6} className="text-center p-4">
+                    No users available
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default Show;

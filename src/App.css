@@ -1,0 +1,41 @@
+:root {
+    
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --background: #0f172a;
+            --surface: #1e293b;
+            --text: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --font-family: "Sansation", sans-serif;
+            --accent: #f472b6;
+            --anim:animation: fadeIn 2s ease forwards;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.st{
+    background: #0f0c29;  /* fallback for old browsers */
+    font-family: font-family;
+   
+  background: -webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #24243e, #302b63, #0f0c29); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  animation: fadeIn 2s ease forwards;
+  }
+  @keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.99); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+ h1{
+  
+  font-family: var(--font-family);
+  text-align: center;
+  margin: 0;
+  padding: 0.25rem 0.5rem;
+  filter: drop-shadow(0 6px 18px rgba(8,6,23,0.9));
+  animation: fadeIn 2s ease forwards;
+}
+.subtext {
+    animation: fadeIn 2s ease forwards; 
+}
+

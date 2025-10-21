@@ -1,12 +1,151 @@
-table, th, td {
-    border: 1px solid black;
-    /* border-collapse: collapse; */
+:root{
+  --primary: #6366f1;
+  --accent: #60A5FA;
+  --surface: #1e293b;
+  --bg: #0f0c29;
+  --text: #e2e8f0;
+}
+
+.leaderboard-root{
+  color: var(--text, #e2e8f0);
+  background: var(--gradient, linear-gradient(90deg, rgba(15,12,41,0.4), rgba(30,41,59,0.6)));
+  padding: 1rem;
+  /* border-radius: 12px; */
+}
+
+.leaderboard-header{
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.leaderboard-title{
+  font-size: 1.6rem;
+  margin: 0;
+  background: var(--gradient, linear-gradient(90deg, #fff, #c7d2fe 50%, #93c5fd 100%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  animation: fadeIn 700ms ease forwards;
+}
+.st{
+    background: #0f0c29;  /* fallback for old browsers */
+    font-family: font-family;
+   
+  background: -webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #24243e, #302b63, #0f0c29); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  animation : anim
   }
-  
-  th, td {
-    padding: 8px;
-    text-align: left;
-  }
-  th{
-    cursor: pointer;
-  }
+.leaderboard-sub{
+  margin: 0.25rem 0 0;
+  color: #a8b3c3;
+  font-size: 0.95rem;
+  animation: fadeIn 900ms ease forwards;
+}
+
+.table-wrap{ overflow-x: auto; }
+.leader-table{ width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+.leader-table thead th{
+  text-align: left;
+  padding: 10px 12px;
+  font-weight: 700;
+  color: var(--text-secondary, #cbd5e1);
+  background: transparent;
+  cursor: pointer;
+}
+.leader-table tbody td{
+  padding: 14px 12px;
+  background: var(--surface, rgba(255,255,255,0.02));
+  border-left: 4px solid transparent;
+}
+.leader-row{ transition: transform 180ms ease, box-shadow 200ms ease; border-radius: 8px; }
+.leader-row:hover{ transform: translateY(-4px); box-shadow: 0 8px 30px rgba(2,6,23,0.6); }
+
+.cell-name .name-wrap{ display:flex; align-items:center; gap:0.75rem; }
+.avatar{ width:44px; height:44px; border-radius:8px; background: linear-gradient(135deg,#667eea,#764ba2); box-shadow: inset 0 -6px 14px rgba(255,255,255,0.06); }
+.name-main{ font-weight:700; }
+.handle{ font-size:0.85rem; color:var(--text-secondary, #9fb0cc); }
+
+.cell-rank{ font-weight:800; color:var(--primary); }
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff; /* default to white for readability on dark gradients */
+}
+
+/* Codeforces-like rank gradients */
+.rank-newbie,
+.rank-newbie, .rank-newbie { /* keep existing */
+  background: linear-gradient(90deg, #808080, #a9a9a9);
+  color: #071033; /* dark text works on light gray */
+}
+
+.rank-pupil {
+  background: linear-gradient(90deg, #008000, #00b300);
+}
+
+.rank-specialist {
+  background: linear-gradient(90deg, #03a89e, #00c0b0);
+}
+
+.rank-expert {
+  background: linear-gradient(90deg, #0000ff, #0066ff);
+}
+
+.rank-cand-master,
+.rank-candidate-master { /* candidate-master variant if API uses it */
+  background: linear-gradient(90deg, #aa00aa, #cc00cc);
+}
+
+.rank-master {
+  background: linear-gradient(90deg, #ff8c00, #ffa500);
+}
+
+.rank-int-master,
+.rank-international-master { /* extra alias */
+  background: linear-gradient(90deg, #ffb300, #ff8c00);
+}
+
+/* Grandmaster family */
+.rank-grandmaster {
+  background: linear-gradient(90deg, #ff0000, #ff3333);
+}
+
+/* International Grandmaster aliases */
+.rank-int-gm,
+.rank-international-gm,
+.rank-international-grandmaster {
+  background: linear-gradient(90deg, #b30000, #cc0000);
+}
+
+/* Legendary Grandmaster aliases */
+.rank-legendary,
+.rank-legendary-grandmaster,
+.rank-legendarygrandmaster {
+  background: linear-gradient(90deg, #000000, #550000);
+}
+
+/* Unrated stays the same */
+.rank-unrated {
+  background: #94a3b8;
+  color: #07203a;
+}
+
+
+.no-data{ text-align:center; padding:2rem; color:var(--text-secondary,#9fb0cc); }
+
+.last-main{font-weight:600}
+.last-date{ font-size:0.8rem; color:var(--text-secondary, #9fb0cc) }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px){
+  .leaderboard-title{ font-size:1.2rem }
+  .avatar{ width:36px; height:36px }
+}

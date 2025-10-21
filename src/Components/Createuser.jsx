@@ -36,12 +36,12 @@ const Createuser = () => {
         
     }
   return (
-    <div className='text-blue-600 h-screen bg-slate-100'>
-  <div className='flex flex-col pt-10 items-center justify-center px-4 md:px-8 lg:px-16'>
+    <div className='text-blue-600 h-screen st' >
+  <div className='flex flex-col pt-10  items-center justify-center px-4 md:px-8 lg:px-16'style={{ animation: 'fadeIn 700ms ease forwards' }}>
     <p className='text-2xl md:text-3xl font-bold mb-4'>Add User</p>
     <form onSubmit={submit} className='flex flex-col font-semibold bg-white p-6 rounded-lg shadow-lg w-full max-w-md'>
-      <div className='flex flex-col gap-4'>
-        <label htmlFor="name" className='text-sm md:text-base'>Name</label>
+      <div className='flex flex-col gap-4  '>
+        <label htmlFor="name" className=' text-sm md:text-base'>Name</label>
         <input
           type="text"
           id='name'
