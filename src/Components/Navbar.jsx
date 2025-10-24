@@ -50,7 +50,7 @@ const Navbar = () => {
 
             {/* sliding sidebar (mobile) */}
             <aside
-                className={`md:hidden fixed right-0 top-0 h-screen w-[60%] sm:w-[45%] bg-[#0B091F] text-white p-4 transition-transform duration-300 ease-in-out transform ${isOpen ? 'translate-x-0' : 'translate-x-full'} rounded-l-xl z-30`}
+                className={`md:hidden fixed right-0 top-0 h-screen w-[60%] sm:w-[45%] bg-[#0B091F] text-white p-4 transition-transform duration-500 ease transform ${isOpen ? 'translate-x-0' : 'translate-x-full'} rounded-l-xl z-30`}
             >
                 <div className='flex justify-end'>
                     <IoClose className="text-3xl cursor-pointer" onClick={() => setIsOpen(false)} />
